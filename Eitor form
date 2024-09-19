@@ -1,0 +1,112 @@
+import React, { useState } from "react";
+
+// Function to validate email format
+const validateEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
+
+const FormEditor = () => {
+  const [fields, setFields] = useState([]);
+
+  // Function to handle adding new fields
+  const addField = (fieldType) => {
+    setFields([...fields, { type: fieldType, data: {} }]);
+  };
+
+  // Function to handle input changes
+  const handleInputChange = (index, key, value) => {
+    const updatedFields = [...fields];
+    updatedFields[index].data[key] = value;
+    setFields(updatedFields);
+  };
+
+  // Render Welcome Screen
+  const renderWelcomeScreen = (field, index) => {
+    return (
+      <div key={index} className="welcome-screen">
+        <h3>Welcome Screen</h3>
+        <input
+          type="text"
+          placeholder="Title"
+          value={field.data.title || ""}
+          onChange={(e) => handleInputChange(index, "title", e.target.value)}
+        />
+        <textarea
+          placeholder="Description"
+          value={field.data.description || ""}
+          onChange={(e) => handleInputChange(index, "description", e.target.value)}
+        />
+        <input
+          type="file"
+          onChange={(e) =>
+            handleInputChange(index, "image", URL.createObjectURL(e.target.files[0]))
+          }
+        />
+        <label>Image Placement:</label>
+        <select
+          value={field.data.placement || ""}
+          onChange={(e) => handleInputChange(index, "placement", e.target.value)}
+        >
+          <option value="left">Left</option>
+          <option value="right">Right</option>
+          <option value="center">Center</option>
+        </select>
+      </div>
+    );
+  };
+
+  // Render Email Input Field
+  const renderEmailField = (field, index) => {
+    const isValidEmail = validateEmail(field.data.email || "");
+    return (
+      <div key={index} className="email-field">
+        <h3>Enter Your Email</h3>
+        <input
+          type="text"
+          placeholder="Title"
+          value={field.data.title || ""}
+          onChange={(e) => handleInputChange(index, "title", e.target.value)}
+        />
+        <textarea
+          placeholder="Description"
+          value={field.data.description || ""}
+          onChange={(e) => handleInputChange(index, "description", e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Enter your email"
+          value={field.data.email || ""}
+          onChange={(e) => handleInputChange(index, "email", e.target.value)}
+        />
+        {!isValidEmail && field.data.email && (
+          <p style={{ color: "red" }}>Invalid email format</p>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div className="form-editor">
+      <h2>Form Editor</h2>
+      <div className="button-container">
+        <button onClick={() => addField("welcomeScreen")}>Add Welcome Screen</button>
+        <button onClick={() => addField("emailField")}>Add Email Field</button>
+      </div>
+
+      <div className="fields-container">
+        {fields.map((field, index) => {
+          if (field.type === "welcomeScreen") {
+            return renderWelcomeScreen(field, index);
+          } else if (field.type === "emailField") {
+            return renderEmailField(field, index);
+          } else {
+            return null;
+          }
+        })}
+      </div>
+    </div>
+  );
+};
+
+export default FormEditor;
